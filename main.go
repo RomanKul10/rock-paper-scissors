@@ -21,7 +21,6 @@ func main() {
 	game.ClearScreen()
 	game.PrintIntro()
 
-	// *** added the for loop
 	for {
 		game.RoundChan <- 1
 		<-game.RoundChan
@@ -33,14 +32,5 @@ func main() {
 			<-game.RoundChan
 		}
 	}
-
-	/* fmt.Println("Final score")
-	fmt.Println("-----------")
-	fmt.Printf("Player: %d/3, Computer %d/3", playerScore, computerScore)
-	fmt.Println()
-	if playerScore > computerScore {
-		fmt.Println("Player wins game!")
-	} else {
-		fmt.Println("Computer wins game!")
-	} */
+	game.PrintSummary()
 }

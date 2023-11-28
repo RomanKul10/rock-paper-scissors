@@ -41,12 +41,13 @@ func (g *Game) Rounds() {
 			g.RoundChan <- 1
 		case msg := <-g.DisplayChan:
 			fmt.Println(msg)
+			// changes here to send info back when done
+			g.DisplayChan <- ""
 		}
 
 	}
 }
 
-// ClearScreen clears the screen
 func (g *Game) ClearScreen() {
 	if strings.Contains(runtime.GOOS, "windows") {
 		// windows
@@ -61,10 +62,13 @@ func (g *Game) ClearScreen() {
 	}
 }
 func (g *Game) PrintIntro() {
-	fmt.Println("Rock, Paper & Scissors")
-	fmt.Println("----------------------")
-	fmt.Println("Game is played for three rounds, and best of three wins the game. Good luck!")
-	fmt.Println()
+	g.DisplayChan <- fmt.Sprintf(`
+	Rock, Paper & Scissors
+	----------------------"
+	Game is played for three rounds, and best of three wins the game. Good luck!
+
+	`)
+	<-g.DisplayChan
 }
 func (g *Game) PlayRound() bool {
 	rand.Seed(time.Now().UnixNano())
@@ -149,4 +153,15 @@ func (g *Game) playerWins() {
 	g.Round.PlayerScore++
 	g.DisplayChan <- "Player wins!"
 
+}
+func (g *Game) PrintSummary() {
+	fmt.Println("Final score")
+	fmt.Println("-----------")
+	fmt.Printf("Player: %d/3, Computer %d/3", g.Round.PlayerScore, g.Round.ComputerScore)
+	fmt.Println()
+	if g.Round.PlayerScore > g.Round.ComputerScore {
+		fmt.Println("Player wins game!")
+	} else {
+		fmt.Println("Computer wins game!")
+	}
 }
